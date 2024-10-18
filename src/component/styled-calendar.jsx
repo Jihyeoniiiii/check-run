@@ -5,7 +5,7 @@ export const StyledCalendarContainer = styled.div`
         width: 700px;
         border-color: white;
         border-radius: 20px;
-        margin: 200px auto;
+        margin: 0 100px;
         box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
     }
 
