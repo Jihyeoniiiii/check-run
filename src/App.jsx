@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import CalendarForm from './component/calendar'
 import CheckList from './component/check-list'
+import { useState } from 'react'
 
 const Wrapper = styled.div`
   display: flex;
@@ -12,12 +13,14 @@ const CalendarWrapper = styled.div`
 `
 
 function App() {
+  const [currentDay, setCurrentDay] = useState(new Date());
+
   return (
     <Wrapper>
       <CalendarWrapper>
-        <CalendarForm />
+      <CalendarForm currentDay={currentDay} setCurrentDay={setCurrentDay} />
       </CalendarWrapper>
-        <CheckList />
+        <CheckList currentDay={currentDay}/>
     </Wrapper>
   )
 }

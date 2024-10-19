@@ -61,4 +61,18 @@ export const StyledCalendarContainer = styled.div`
             padding: 30px;
         }
     }
+
+    .react-calendar__month-view__days button.marked abbr{
+        background-color: orange;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border: none;
+        margin: auto;
+        pointer-events: none;
+    }
 `;
