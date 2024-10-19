@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
+import dayjs from 'dayjs';
 
 const ListForm = styled.div`
     width: 450px;
@@ -31,16 +32,27 @@ const ListItem = styled.li`
 
 const Checkbox = styled.input`
     margin-right: 20px;
+    accent-color: orange;
 `;
 
 const ItemText = styled.span`
     font-size: 18px;
 `;
 
+const DeleteButton = styled.button`
+    background-color: white;
+    border: none;
+    color: orange;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-left: 20px;
+`
+
 const InputContainer = styled.div`
     width: auto;
     height: 30px;
     display: flex;
+    margin-bottom: 10px;
 `
 
 const Input = styled.input`
@@ -67,18 +79,18 @@ const SubmitButton = styled.button`
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
 `
 
-const CheckList = () => {
-    const [value, setValue] = useState('');
+const CheckList = ({ currentDay }) => {
+    const [listText, setListText] = useState('');
     const [submittedValues, setSubmittedValues] = useState([]);
     const [checkedState, setCheckedState] = useState([]);
 
-    const handleChange = (value) => setValue(value);
+    const handleChange = (listText) => setListText(listText);
 
     const handleSubmit = () => {
-        if (value.trim()) {
-            setSubmittedValues((prev) => [...prev, value]);
+        if (listText.trim()) {
+            setSubmittedValues((prev) => [...prev, listText]);
             setCheckedState((prev) => [...prev, false]);
-            setValue('');
+            setListText('');
         }
     };
 
@@ -88,8 +100,14 @@ const CheckList = () => {
         setCheckedState(updatedCheckedState);
     }
 
+    const handleDelete = (index) => {
+        const updatedSubmittedValues = submittedValues.filter((_, i) => i !== index);
+        setSubmittedValues(updatedSubmittedValues);
+    }
+
   return (
     <ListForm>
+        <h4 style={{marginLeft:'20px'}}>{dayjs(currentDay).format('YYYY-MM-DD')}</h4>
         {submittedValues && (
             <ValueDisplay>
                 {submittedValues.map((item, index) => (
@@ -100,6 +118,7 @@ const CheckList = () => {
                             onChange={() => handleItemCheck(index)}
                         />
                         <ItemText>{item}</ItemText>
+                        <DeleteButton onClick={() => handleDelete(index)}>X</DeleteButton>
                     </ListItem>
                 ))}
             </ValueDisplay>
@@ -107,7 +126,7 @@ const CheckList = () => {
 
         <InputContainer>
             <Input 
-                value={value}
+                value={listText}
                 onChange={(e) => handleChange(e.target.value)}
                 placeholder='오늘의 할 일을 입력해주세요'
             />
