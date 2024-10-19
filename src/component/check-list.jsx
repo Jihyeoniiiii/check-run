@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
-import dayjs from 'dayjs';
+import { useEffect } from 'react';
 
 const ListForm = styled.div`
     width: 450px;
@@ -44,7 +44,7 @@ const DeleteButton = styled.button`
     border: none;
     color: orange;
     font-weight: bold;
-    margin-top: 5px;
+    margin-top: 3px;
     margin-left: 20px;
 `
 
@@ -82,47 +82,68 @@ const SubmitButton = styled.button`
 const CheckList = ({ currentDay }) => {
     const [listText, setListText] = useState('');
     const [submittedValues, setSubmittedValues] = useState([]);
-    const [checkedState, setCheckedState] = useState([]);
+
+    useEffect(() => {
+        const storedData = localStorage.getItem(currentDay);
+        console.log(`Loaded data for ${currentDay}:`, storedData);
+    
+        const parsedData = storedData ? JSON.parse(storedData) : [];
+    
+        console.log('Parsed Data:', parsedData, typeof parsedData[0]);
+    
+        if (Array.isArray(parsedData)) {
+          setSubmittedValues(parsedData);
+        } else {
+          console.error('Parsed data is not an array:', parsedData);
+          setSubmittedValues([]);
+        }
+      }, [currentDay]);
 
     const handleChange = (listText) => setListText(listText);
 
     const handleSubmit = () => {
         if (listText.trim()) {
-            setSubmittedValues((prev) => [...prev, listText]);
-            setCheckedState((prev) => [...prev, false]);
+            const newItem = { text: listText, checked: false };
+            const newValues = [...submittedValues, newItem];
+
+            setSubmittedValues(newValues);
+
+            localStorage.setItem(currentDay, JSON.stringify(newValues));
             setListText('');
         }
     };
 
     const handleItemCheck = (index) => {
-        const updatedCheckedState = [...checkedState];
-        updatedCheckedState[index] = !updatedCheckedState[index];
-        setCheckedState(updatedCheckedState);
+        const updatedValues  = [...submittedValues];
+        updatedValues[index].checked = !updatedValues[index].checked;
+        
+        setSubmittedValues(updatedValues);
+        localStorage.setItem(currentDay, JSON.stringify(updatedValues));
     }
 
     const handleDelete = (index) => {
         const updatedSubmittedValues = submittedValues.filter((_, i) => i !== index);
         setSubmittedValues(updatedSubmittedValues);
+
+        localStorage.setItem(currentDay, JSON.stringify(updatedSubmittedValues));
     }
 
   return (
     <ListForm>
-        <h4 style={{marginLeft:'20px'}}>{dayjs(currentDay).format('YYYY-MM-DD')}</h4>
-        {submittedValues && (
+        <h4 style={{marginLeft:'20px'}}>{currentDay}</h4>
             <ValueDisplay>
                 {submittedValues.map((item, index) => (
                     <ListItem key={index}>
                         <Checkbox 
                             type="checkbox"
-                            checked={checkedState[index]}
+                            checked={item.checked}
                             onChange={() => handleItemCheck(index)}
                         />
-                        <ItemText>{item}</ItemText>
+                        <ItemText>{item.text}</ItemText>
                         <DeleteButton onClick={() => handleDelete(index)}>X</DeleteButton>
                     </ListItem>
                 ))}
             </ValueDisplay>
-        )}
 
         <InputContainer>
             <Input 

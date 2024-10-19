@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import Calendar from 'react-calendar'
 import { StyledCalendarContainer } from './styled-calendar'
 import dayjs from 'dayjs';
-import styled from 'styled-components';
 
 const CalendarForm = ({ currentDay, setCurrentDay }) => {
     const today = dayjs().startOf('day');
@@ -19,6 +18,8 @@ const CalendarForm = ({ currentDay, setCurrentDay }) => {
     };
 
     const handleDateClick = (date) => {
+        const formattedDate = dayjs(date).format('YYYY-MM-DD');
+        setCurrentDay(formattedDate);
         setMarkedDate(dayjs(date).startOf('day'));
         setValue(date);
     }
@@ -42,8 +43,8 @@ const CalendarForm = ({ currentDay, setCurrentDay }) => {
     return (
         <StyledCalendarContainer>
             <Calendar 
-                onChange={setCurrentDay}
-                value={currentDay}
+                onChange={(date) => setCurrentDay(dayjs(date).format('YYYY-MM-DD'))}
+                value={dayjs(currentDay).toDate()}
                 onActiveStartDateChange={handleActiveStartDateChange}
                 formatDay ={(locale, date) => dayjs(date).format('DD')}
                 tileDisabled={tileDisabled}

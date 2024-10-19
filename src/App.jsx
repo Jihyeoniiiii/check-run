@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import CalendarForm from './component/calendar'
 import CheckList from './component/check-list'
 import { useState } from 'react'
+import dayjs from 'dayjs'
 
 const Wrapper = styled.div`
   display: flex;
@@ -13,7 +14,7 @@ const CalendarWrapper = styled.div`
 `
 
 function App() {
-  const [currentDay, setCurrentDay] = useState(new Date());
+  const [currentDay, setCurrentDay] = useState(dayjs().format('YYYY-MM-DD'));
 
   return (
     <Wrapper>
