@@ -1,13 +1,10 @@
-import React from 'react'
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { useEffect } from 'react';
 
 const ListForm = styled.div`
     width: 450px;
     height: 600px;
-    margin-top: 70px;
-    margin-right: 270px;
+    margin-right: 280px;
     border-radius: 20px;
     padding: 20px;
     display: flex;
@@ -85,11 +82,7 @@ const CheckList = ({ currentDay }) => {
 
     useEffect(() => {
         const storedData = localStorage.getItem(currentDay);
-        console.log(`Loaded data for ${currentDay}:`, storedData);
-    
         const parsedData = storedData ? JSON.parse(storedData) : [];
-    
-        console.log('Parsed Data:', parsedData, typeof parsedData[0]);
     
         if (Array.isArray(parsedData)) {
           setSubmittedValues(parsedData);
