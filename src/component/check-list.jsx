@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
+import dayjs from 'dayjs'
 
 const ListForm = styled.div`
     width: 450px;
@@ -76,21 +77,21 @@ const SubmitButton = styled.button`
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
 `
 
-const CheckList = ({ currentDay }) => {
+const CheckList = ({ currentDay, onUpdate }) => {
     const [listText, setListText] = useState('');
     const [submittedValues, setSubmittedValues] = useState([]);
+    const currentMonth = dayjs(currentDay).format('YYYY-MM');
 
     useEffect(() => {
-        const storedData = localStorage.getItem(currentDay);
-        const parsedData = storedData ? JSON.parse(storedData) : [];
+        const storedData = localStorage.getItem('checklistData');
+        const parsedData = storedData ? JSON.parse(storedData) : {};
     
-        if (Array.isArray(parsedData)) {
-          setSubmittedValues(parsedData);
-        } else {
-          console.error('Parsed data is not an array:', parsedData);
-          setSubmittedValues([]);
-        }
-      }, [currentDay]);
+        if (parsedData[currentMonth] && parsedData[currentMonth][currentDay]) {
+            setSubmittedValues(parsedData[currentMonth][currentDay]);
+          } else {
+            setSubmittedValues([]);
+          }
+        }, [currentDay, currentMonth]);
 
     const handleChange = (listText) => setListText(listText);
 
@@ -100,9 +101,9 @@ const CheckList = ({ currentDay }) => {
             const newValues = [...submittedValues, newItem];
 
             setSubmittedValues(newValues);
-
-            localStorage.setItem(currentDay, JSON.stringify(newValues));
+            saveDataToLocal(newValues);
             setListText('');
+            onUpdate();
         }
     };
 
@@ -111,14 +112,29 @@ const CheckList = ({ currentDay }) => {
         updatedValues[index].checked = !updatedValues[index].checked;
         
         setSubmittedValues(updatedValues);
-        localStorage.setItem(currentDay, JSON.stringify(updatedValues));
+        saveDataToLocal(updatedValues);
+        onUpdate();
     }
 
     const handleDelete = (index) => {
         const updatedSubmittedValues = submittedValues.filter((_, i) => i !== index);
         setSubmittedValues(updatedSubmittedValues);
 
-        localStorage.setItem(currentDay, JSON.stringify(updatedSubmittedValues));
+        saveDataToLocal(updatedSubmittedValues);
+        onUpdate();
+    }
+
+    const saveDataToLocal = (newValues) => {
+        const storedData = JSON.parse(localStorage.getItem('checklistData') || '{}');
+        const updateData = {
+            ...storedData,
+            [currentMonth] : {
+                ...storedData[currentMonth],
+                [currentDay]: newValues,
+            },
+        };
+
+        localStorage.setItem('checklistData', JSON.stringify(updateData));
     }
 
   return (
